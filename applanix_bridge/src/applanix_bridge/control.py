@@ -54,7 +54,7 @@ from applanix_msgs import mapping
 
 # Python
 import threading
-from cStringIO import StringIO
+from io import BytesIO
 
 
 SILENCE_INTERVAL=5.0
@@ -114,6 +114,6 @@ class ServiceHandler(object):
         raise ValueError("Non-ack message on control port: %s.%d" % pkt_id)
 
       handler = AckHandler()
-      handler.handle(StringIO(pkt_str))
+      handler.handle(BytesIO(pkt_str))
 
       return handler.message

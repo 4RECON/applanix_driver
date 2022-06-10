@@ -39,14 +39,14 @@
 #
 # Please send comments, questions, or patches to skynet@clearpathrobotics.com
 #
+import sys
 
 import genpy.message, genpy.base
 import roslib.msgs
 
 import rospy
 import struct
-from itertools import izip
-from cStringIO import StringIO
+from io import BytesIO
 
 
 class EndOfBuffer(BaseException):
@@ -101,7 +101,7 @@ class FixedFieldsHandler(Handler):
     st = buff.read(self.struct.size)
     if st == '': raise EndOfBuffer()
     values = self.struct.unpack(st) 
-    for name, value in izip(self.names, values):
+    for (name, value) in zip(self.names, values):
       setattr(msg, name, value)
 
 
@@ -119,7 +119,7 @@ class SubMessageArrayHandler(Handler):
     if hasattr(msg, self.name_count):
       # Another field specifies number of array items to deserialize.
       length = getattr(msg, self.name_count) * self.submessage_size 
-      data = StringIO(buff.read(length))
+      data = BytesIO(buff.read(length))
     else:
       # Consume as much as we can straight from the buffer.
       data = buff

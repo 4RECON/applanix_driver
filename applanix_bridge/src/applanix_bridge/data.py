@@ -53,7 +53,7 @@ from handlers import GroupHandler, MessageHandler
 import translator
 
 # Python
-from cStringIO import StringIO
+from io import BytesIO
 from threading import Lock
 
 
@@ -91,7 +91,7 @@ class DataPort(Port):
       try:
         pkt_id, pkt_str = self.recv()
         if pkt_id != None:
-          handlers[pkt_id].handle(StringIO(pkt_str))
+          handlers[pkt_id].handle(BytesIO(pkt_str))
 
       except ValueError as e:
         # Some problem in the recv() routine.

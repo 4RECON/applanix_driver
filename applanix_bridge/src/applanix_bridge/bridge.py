@@ -52,7 +52,7 @@ from monitor import Monitor
 # Standard
 import socket
 import struct
-from cStringIO import StringIO
+from io import BytesIO
 import time
 
 import translator
@@ -142,7 +142,7 @@ def create_test_sock(pcap_filename):
   rospy.sleep(0.1)
 
   import pcapy
-  from StringIO import StringIO
+  from io import StringIO
   from impacket import ImpactDecoder
 
   body_list = []

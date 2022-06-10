@@ -5,5 +5,8 @@
 msg_gen
 srv_gen
 build
+
 applanix_msgs/srv/*
 applanix_msgs/msg/AllMsgs.msg
+
+.idea/

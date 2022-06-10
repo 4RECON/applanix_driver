@@ -49,7 +49,7 @@ from translator import Translator
 import threading
 import socket
 import struct
-from cStringIO import StringIO
+from io import BytesIO
 
 
 class Port(threading.Thread):
@@ -78,9 +78,9 @@ class Port(threading.Thread):
     except socket.timeout:
       return None, None
 
-    header_data = StringIO(header_str)
+    header_data = BytesIO(header_str)
     self.header.translator().deserialize(header_data)
-    pkt_id = (str(self.header.start).encode('string_escape'), self.header.id)
+    pkt_id = (str(self.header.start).encode('unicode_escape'), self.header.id)
 
     # Initial sanity check.
     if pkt_id[0] not in (msg.CommonHeader.START_GROUP, msg.CommonHeader.START_MESSAGE):
@@ -95,13 +95,14 @@ class Port(threading.Thread):
     pkt_str = self.sock.recv(self.header.length)
 
     # Check package footer.
-    footer_data = StringIO(pkt_str[-self.footer.translator().size:])
+    footer_data = BytesIO(pkt_str[-self.footer.translator().size:])
     self.footer.translator().deserialize(footer_data)
     if str(self.footer.end) != msg.CommonFooter.END:
       raise ValueError("Bad footer from pkt %s.%d" % pkt_id)
 
     # Check package checksum.
-    if self._checksum(StringIO(header_str + pkt_str)) != 0:
+    checksum = self._checksum(BytesIO(header_str + pkt_str))
+    if checksum != 0:
       raise ValueError("Bad checksum from pkt %s.%d: %%d" % pkt_id % checksum)
 
     return pkt_id, pkt_str 
@@ -109,17 +110,17 @@ class Port(threading.Thread):
   def send(self, header, message):
     """ Sends a header/msg/footer out the socket. Takes care of computing
         length field for header and checksum field for footer. """
-    msg_buff = StringIO()
+    msg_buff = BytesIO()
     message.translator().preserialize()
     message.translator().serialize(msg_buff)
     pad_count = -msg_buff.tell() % 4
-    msg_buff.write("\x00" * pad_count)
+    msg_buff.write('\x00'.encode("utf-8") * pad_count)
 
     footer = msg.CommonFooter(end=msg.CommonFooter.END)
     header.length = msg_buff.tell() + footer.translator().size
 
     # Write header and message to main buffer.
-    buff = StringIO()
+    buff = BytesIO()
     header.translator().serialize(buff)
     buff.write(msg_buff.getvalue())
      
@@ -140,7 +141,7 @@ class Port(threading.Thread):
 
   @classmethod
   def _checksum(cls, buff):
-    """ Compute Applanix checksum. Expects a StringIO with a 
+    """ Compute Applanix checksum. Expects a BytesIO with a
       size that is a multiple of four bytes. """
     checksum = 0
     while True:

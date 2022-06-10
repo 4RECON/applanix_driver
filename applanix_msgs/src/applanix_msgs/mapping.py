@@ -124,26 +124,26 @@ if __name__ == '__main__':
       if name != "ack" and msg not in srvs:
         srvs += [msg]
 
-    print ";".join(srvs)
+    print(";".join(srvs))
 
   elif sys.argv[1] == "-a":
-    print "time last_changed"
-    print "time last_sent"
+    print("time last_changed")
+    print("time last_sent")
     for name, msg, in_all_msgs in msgs.values():
       if in_all_msgs:
-        print "applanix_msgs/%s %s" % (msg, name)
+        print("applanix_msgs/%s %s" % (msg, name))
 
   elif sys.argv[1] == "-g":
     msg_name = sys.argv[2]
-    print "applanix_msgs/" + msg_name + " request"
-    print "---"
-    print "applanix_msgs/Ack ack"
+    print("applanix_msgs/" + msg_name + " request")
+    print("---")
+    print("applanix_msgs/Ack ack")
 
   else:
-    print "Usage: mapping.py [-s|-a|-g <msg name>]"
-    print "If no arguments or -s given, list services to generate"
-    print "  -a generate AllMsgs message definition"
-    print "  -g <msg_name> Generate service for message type given"
+    print("Usage: mapping.py [-s|-a|-g <msg name>]")
+    print("If no arguments or -s given, list services to generate")
+    print("  -a generate AllMsgs message definition")
+    print("  -g <msg_name> Generate service for message type given")
     sys.exit(1)
 
 
